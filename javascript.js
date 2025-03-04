@@ -3,8 +3,10 @@ function App() {
   const [counta, setCounta] = React.useState(25); // Session Length
   const [timeLeft, setTimeLeft] = React.useState(1500); // 1500 segundos = 25:00
   const [isRunning, setIsRunning] = React.useState(false); // Controlar el estado del temporizador
+  const [isSession, setIsSession] = React.useState(true); // true = Session, false = Break
   const timerRef = React.useRef(null); // Referencia para el intervalo del temporizador
 
+   
   // Función para formatear el tiempo en mm:ss
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -20,8 +22,16 @@ function App() {
       timerRef.current = setInterval(() => {
         setTimeLeft((prevTime) => {
           if (prevTime <= 0) {
-            clearInterval(timerRef.current);
-            return counta * 60; // Reinicia el tiempo con la duración de la sesión actual
+            // Cambiar entre sesión y descanso
+            if (isSession) {
+              // Cambiar a descanso
+              setIsSession(false);
+              return count * 60; // Reiniciar con el tiempo de descanso
+            } else {
+              // Cambiar a sesión
+              setIsSession(true);
+              return counta * 60; // Reiniciar con el tiempo de sesión
+            }
           }
           return prevTime - 1;
         });
@@ -34,8 +44,9 @@ function App() {
   const resetTimer = () => {
     clearInterval(timerRef.current);
     setIsRunning(false);
-    setCount(5);       // Restablecer Break Length a 5
-    setCounta(25);     // Restablecer Session Length a 25
+    setIsSession(true); // Reiniciar en modo sesión
+    setCount(5); // Restablecer Break Length a 5
+    setCounta(25); // Restablecer Session Length a 25
     setTimeLeft(1500); // Restablecer el temporizador a 25:00
   };
 
@@ -61,7 +72,7 @@ function App() {
 
       {/* Temporizador */}
       <div id="timer-label">
-        Session
+        {isSession ? "Session" : "Break"} {/* Mostrar "Session" o "Break" */}
         <div id="time-left">{formatTime(timeLeft)}</div>
         <button id="start_stop" onClick={toggleTimer}>
           {isRunning ? "Pause" : "Start"}
@@ -79,7 +90,9 @@ function App() {
           id="session-increment"
           onClick={() => {
             setCounta((prev) => Math.min(prev + 1, 60));
-            setTimeLeft((counta + 1) * 60); // Actualiza el tiempo restante
+            if (isSession) {
+              setTimeLeft((counta + 1) * 60); // Actualiza el tiempo restante si está en sesión
+            }
           }}
         >
           Up
@@ -88,7 +101,9 @@ function App() {
           id="session-decrement"
           onClick={() => {
             setCounta((prev) => Math.max(prev - 1, 1));
-            setTimeLeft((counta - 1) * 60); // Actualiza el tiempo restante
+            if (isSession) {
+              setTimeLeft((counta - 1) * 60); // Actualiza el tiempo restante si está en sesión
+            }
           }}
         >
           Down
