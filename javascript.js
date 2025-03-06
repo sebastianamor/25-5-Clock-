@@ -2,16 +2,28 @@ function App() {
   const [count, setCount] = React.useState(5); // Break Length
   const [counta, setCounta] = React.useState(25); // Session Length
   const [timeLeft, setTimeLeft] = React.useState(1500); // 1500 segundos = 25:00
-  const [isRunning, setIsRunning] = React.useState(false); // Controlar el estado del temporizador
+  const [isRunning, setIsRunning] = React.useState(false); // Estado del temporizador
   const [isSession, setIsSession] = React.useState(true); // true = Session, false = Break
-  const timerRef = React.useRef(null); // Referencia para el intervalo del temporizador
+  const timerRef = React.useRef(null); // Referencia del temporizador
+  const audioRef = React.useRef(null); // Referencia del sonido
 
-   
   // Función para formatear el tiempo en mm:ss
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  // Función para reproducir el beep
+  const playBeep = () => {
+    audioRef.current.play();
+  };
+
+  // Función para cambiar entre sesión y descanso
+  const switchPhase = () => {
+    playBeep(); // 🔊 Sonido cuando llega a 00:00
+    setIsSession((prev) => !prev); // Alternar entre sesión y descanso
+    setTimeLeft((prev) => (isSession ? count * 60 : counta * 60)); // Asignar el nuevo tiempo
   };
 
   // Iniciar o pausar el temporizador
@@ -22,16 +34,8 @@ function App() {
       timerRef.current = setInterval(() => {
         setTimeLeft((prevTime) => {
           if (prevTime <= 0) {
-            // Cambiar entre sesión y descanso
-            if (isSession) {
-              // Cambiar a descanso
-              setIsSession(false);
-              return count * 60; // Reiniciar con el tiempo de descanso
-            } else {
-              // Cambiar a sesión
-              setIsSession(true);
-              return counta * 60; // Reiniciar con el tiempo de sesión
-            }
+            switchPhase(); // Cambiar entre sesión y descanso
+            return prevTime; // Evitar valores negativos
           }
           return prevTime - 1;
         });
@@ -44,44 +48,40 @@ function App() {
   const resetTimer = () => {
     clearInterval(timerRef.current);
     setIsRunning(false);
-    setIsSession(true); // Reiniciar en modo sesión
-    setCount(5); // Restablecer Break Length a 5
-    setCounta(25); // Restablecer Session Length a 25
-    setTimeLeft(1500); // Restablecer el temporizador a 25:00
+    setIsSession(true);
+    setCount(5);
+    setCounta(25);
+    setTimeLeft(1500);
+    audioRef.current.pause();
+    audioRef.current.currentTime = 0;
   };
 
   return (
-    <div>
+    <div id="parent"  >
       {/* Sección Break */}
       <div id="break-label">
         Break Length
         <div id="break-length">{count}</div>
-        <button
-          id="break-increment"
-          onClick={() => setCount((prev) => Math.min(prev + 1, 60))}
-        >
+        <button id="break-increment" onClick={() => setCount((prev) => Math.min(prev + 1, 60))}>
           Up
         </button>
-        <button
-          id="break-decrement"
-          onClick={() => setCount((prev) => Math.max(prev - 1, 1))}
-        >
+        <button id="break-decrement" onClick={() => setCount((prev) => Math.max(prev - 1, 1))}>
           Down
         </button>
       </div>
 
       {/* Temporizador */}
-      <div id="timer-label">
-        {isSession ? "Session" : "Break"} {/* Mostrar "Session" o "Break" */}
-        <div id="time-left">{formatTime(timeLeft)}</div>
+      <div id="timer-controls">
+      <div id="timer-label">{isSession ? "Session" : "Break"}</div>
+      <div id="time-left">{formatTime(timeLeft)}</div>
         <button id="start_stop" onClick={toggleTimer}>
-          {isRunning ? "Pause" : "Start"}
+        <span class="play-button play-button-before"></span>
+        <span class="play-button play-button-after"></span>
+        
+        
         </button>
-        <button id="reset" onClick={resetTimer}>
-          Reset
-        </button>
+      <button id="reset" onClick={resetTimer}>リセット</button>
       </div>
-
       {/* Sección Session */}
       <div id="session-label">
         Session Length
@@ -89,10 +89,9 @@ function App() {
         <button
           id="session-increment"
           onClick={() => {
-            setCounta((prev) => Math.min(prev + 1, 60));
-            if (isSession) {
-              setTimeLeft((counta + 1) * 60); // Actualiza el tiempo restante si está en sesión
-            }
+            const newCounta = Math.min(counta + 1, 60);
+            setCounta(newCounta);
+            if (isSession) setTimeLeft(newCounta * 60);
           }}
         >
           Up
@@ -100,15 +99,17 @@ function App() {
         <button
           id="session-decrement"
           onClick={() => {
-            setCounta((prev) => Math.max(prev - 1, 1));
-            if (isSession) {
-              setTimeLeft((counta - 1) * 60); // Actualiza el tiempo restante si está en sesión
-            }
+            const newCounta = Math.max(counta - 1, 1);
+            setCounta(newCounta);
+            if (isSession) setTimeLeft(newCounta * 60);
           }}
         >
           Down
         </button>
       </div>
+
+      {/* 🎵 Elemento de audio para el beep */}
+      <audio id="beep" ref={audioRef} src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg"></audio>
     </div>
   );
 }

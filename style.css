@@ -1,0 +1,139 @@
+/* Estilos generales */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: #000
+  }
+  
+  #mical {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    width: 300px;
+  }
+  
+  /* Estilos para los títulos */
+  #break-label,
+  #session-label,
+  #timer-label {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  /* Estilos para los contadores */
+  #break-length,
+  #session-length,
+  #time-left {
+    font-size: 2em;
+    font-weight: bold;
+    color: #555;
+    margin: 10px 0;
+  }
+  
+  /* Estilos para los botones */
+  #break-decrement,
+  #session-decrement,
+  #break-increment,
+  #session-increment,
+  #reset{
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Estilos para el botón de reset */
+  #reset {
+    background-color: #dc3545;
+    width: 60px;
+    height: 60px;
+    background: red;
+    border-radius: 100px;
+    font-size: 10px;
+    
+    margin-left: 100px; /* Mueve el botón de reset a la derecha */
+     
+  }
+  
+  #reset:hover {
+    background-color: #c82333;
+  }
+  
+  /* Estilos para el audio (oculto) */
+  audio {
+    display: none;
+  }
+  
+  /* Estilos para el contenedor de los botones de incremento y decremento */
+  #break-controls,
+  #session-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  /* Estilos para el temporizador */
+  #timer-label {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+  }
+  
+  #time-left {
+    font-size: 3em;
+    color: #007bff;
+    margin: 20px 0;
+  }
+  
+  /* Estilos para el botón de inicio/pausa */
+  #start_stop {
+      display: inline-block;
+      width: 1px;
+      height: 1px;
+      cursor: pointer;
+     background-color: #000;
+    }
+   .play-button {
+      display: inline-block;
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background: #fff;
+      transition: clip-path .3s ease;
+    }
+    .play-button-before {
+      clip-path: polygon(0 0, 50% 25%, 50% 75%, 0% 100%);
+    }
+    .play-button-after {
+      clip-path: polygon(50% 25%, 100% 50%, 100% 50%, 50% 75%);
+    }
+   #start_stop:hover .play-button-before {
+      clip-path: polygon(0 0, 30% 0, 30% 100%, 0% 100%);
+    }
+    #start_stop:hover .play-button-after{
+      clip-path: polygon(70% 0, 100% 0, 100% 100%, 70% 100%)
+    }
+  
+  /* Contenedor de los botones de control del temporizador */
+  #timer-controls {
+    display: flex;
+    justify-content: space-between; /* Separa los botones */
+    align-items: center;
+  }
